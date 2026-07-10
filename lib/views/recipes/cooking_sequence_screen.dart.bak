@@ -21,17 +21,17 @@ class _CookingSequenceScreenState extends State<CookingSequenceScreen> {
   }
 
   Future<void> _executeCooking() async {
-    
+    // 1. Wait for Firebase to actually save
     await widget.saveFuture();
     
-    
+    // 2. Artificial delay to let the "bubbling pot" animation play out
     await Future.delayed(const Duration(seconds: 2));
     
-    
+    // 3. Trigger the success state
     if (mounted) {
       setState(() => _isCooked = true);
       
-      
+      // 4. Wait for the success animation to finish, then pop back to Tavern
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
@@ -42,7 +42,7 @@ class _CookingSequenceScreenState extends State<CookingSequenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A0F08), 
+      backgroundColor: const Color(0xFF1A0F08), // Pitch black room focus
       body: Center(
         child: _isCooked 
             ? _buildSuccessAchievement() 
@@ -55,7 +55,7 @@ class _CookingSequenceScreenState extends State<CookingSequenceScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        
+        // Bubbling Pot Icon (Simulated with animation)
         const Icon(Icons.soup_kitchen, size: 100, color: Color(0xFF8B5A2B))
             .animate(onPlay: (c) => c.repeat())
             .shake(hz: 4, curve: Curves.easeInOut)

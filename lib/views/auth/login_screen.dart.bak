@@ -27,11 +27,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          
+          // In a real app, replace this with an animated looping pixel-art GIF
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF2B2B45), Color(0xFF1A0F08)], 
+            colors: [Color(0xFF2B2B45), Color(0xFF1A0F08)], // Night sky to dark ground
           ),
         ),
         child: Center(
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                
+                // Game Logo
                 Text(
                   'PIXEL\nCOOKBOOK',
                   textAlign: TextAlign.center,
@@ -53,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-                 .moveY(begin: -5, end: 5, duration: 2.seconds) 
+                 .moveY(begin: -5, end: 5, duration: 2.seconds) // Floating idle animation
                  .shimmer(delay: 3.seconds, duration: 1.seconds),
 
                 const SizedBox(height: 40),
 
-                
+                // Notice Board (Login Form)
                 PixelPanel(
-                  baseColor: const Color(0xFFE2D6B5), 
+                  baseColor: const Color(0xFFE2D6B5), // Weathered paper
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 32),
                         PixelButton(
                           text: 'Continue Journey',
-                          color: const Color(0xFF8B5A2B), 
+                          color: const Color(0xFF8B5A2B), // Leather brown
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               await authService.signInWithEmailAndPassword(

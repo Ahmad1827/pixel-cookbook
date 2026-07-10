@@ -7,7 +7,7 @@ class DatabaseService {
   Stream<List<Recipe>> get publicRecipes {
     return _db
         .collection('recipes')
-        
+        // Removed the complex orderBy to bypass the Composite Index requirement
         .where('isPublic', isEqualTo: true) 
         .snapshots()
         .map((snapshot) {
@@ -15,7 +15,7 @@ class DatabaseService {
               .map((doc) => Recipe.fromMap(doc.id, doc.data()))
               .toList();
           
-          
+          // Sort the recipes locally in memory so the newest is always first
           recipes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return recipes;
         });
