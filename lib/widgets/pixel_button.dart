@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class PixelButton extends StatefulWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final Color color;
+
+  const PixelButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.color = const Color(0xFF2E8B57), // Forest Green
+  });
+
+  @override
+  State<PixelButton> createState() => _PixelButtonState();
+}
+
+class _PixelButtonState extends State<PixelButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onPressed();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 50),
+        transform: Matrix4.translationValues(0, _isPressed ? 4 : 0, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: widget.color,
+          border: Border.all(color: const Color(0xFF1A0F08), width: 4),
+          boxShadow: _isPressed
+              ? []
+              : const [
+                  BoxShadow(
+                    color: Color(0xFF1A0F08),
+                    offset: Offset(4, 4),
+                    blurRadius: 0,
+                  )
+                ],
+        ),
+        child: Text(
+          widget.text.toUpperCase(),
+          style: GoogleFonts.pixelifySans(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            shadows: const [
+              Shadow(color: Colors.black54, offset: Offset(2, 2)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

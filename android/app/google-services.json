@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "438157628461",
+    "project_id": "culinary-expedition",
+    "storage_bucket": "culinary-expedition.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438157628461:android:9c238ca668c8def86d14a4",
+        "android_client_info": {
+          "package_name": "com.example.cookbook_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5r0qRdPHu3X9Bg3xu7ZFbgPFUzprZ0vk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
