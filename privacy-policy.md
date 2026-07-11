@@ -26,3 +26,5 @@ We treat player and user data with absolute privacy. User-generated content, acc
 
 ### 5. Breaches and Enforcement
 Any unauthorized distribution, exposure, or leakage of our source files, credentials, or user information constitutes a violation of this Policy. AtodDev reserves the right to immediately terminate access permissions, remove open-source contributor status, and pursue necessary legal or administrative actions to protect our intellectual property and community privacy.
+
+### For account deletion email us at atoddevelopers3@gmail.com
