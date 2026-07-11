@@ -11,69 +11,90 @@ class RecipeDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ancient Tome')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: PixelPanel(
-          baseColor: const Color(0xFFF4EAD4), 
-          padding: const EdgeInsets.all(24.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                recipe.title.toUpperCase(),
-                style: GoogleFonts.pixelifySans(
-                  fontSize: 36, 
-                  color: const Color(0xFF8B5A2B),
-                  shadows: const [
-                    Shadow(color: Color(0x40000000), offset: Offset(2, 2)),
+              PixelPanel(
+                baseColor: const Color(0xFF1A0F08),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Color(0xFFF4EAD4)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'ANCIENT TOME',
+                      style: GoogleFonts.pixelifySans(fontSize: 24, color: const Color(0xFFF4EAD4)),
+                    ),
                   ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Discovered by ${recipe.authorName}', 
-                style: GoogleFonts.vt323(fontSize: 22, color: const Color(0xFF5C3A21))
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24.0),
-                child: Divider(color: Color(0xFF321B09), thickness: 4), 
-              ),
-              
-              
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  if (constraints.maxWidth > 600) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _buildIngredientsList()),
-                        Container(
-                          width: 6, 
-                          height: 300, 
-                          margin: const EdgeInsets.symmetric(horizontal: 24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF321B09), 
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ), 
-                        Expanded(child: _buildInstructionsList()),
-                      ],
-                    );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildIngredientsList(),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24.0),
-                        child: Divider(color: Color(0xFF321B09), thickness: 2),
+              const SizedBox(height: 16),
+              PixelPanel(
+                baseColor: const Color(0xFFF4EAD4),
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      recipe.title.toUpperCase(),
+                      style: GoogleFonts.pixelifySans(
+                        fontSize: 36, 
+                        color: const Color(0xFF8B5A2B),
+                        shadows: const [
+                          Shadow(color: Color(0x40000000), offset: Offset(2, 2)),
+                        ],
                       ),
-                      _buildInstructionsList(),
-                    ],
-                  );
-                }
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Discovered by ${recipe.authorName}', 
+                      style: GoogleFonts.vt323(fontSize: 22, color: const Color(0xFF5C3A21))
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24.0),
+                      child: Divider(color: Color(0xFF321B09), thickness: 4),
+                    ),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (constraints.maxWidth > 600) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(child: _buildIngredientsList()),
+                              Container(
+                                width: 6, 
+                                height: 300, 
+                                margin: const EdgeInsets.symmetric(horizontal: 24),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF321B09),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ), 
+                              Expanded(child: _buildInstructionsList()),
+                            ],
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildIngredientsList(),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 24.0),
+                              child: Divider(color: Color(0xFF321B09), thickness: 2),
+                            ),
+                            _buildInstructionsList(),
+                          ],
+                        );
+                      }
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

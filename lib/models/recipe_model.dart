@@ -1,12 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Recipe {
-  final String id;
-  final String title;
-  final String authorId;
-  final String authorName;
-  final List<String> ingredients;
-  final List<String> instructions;
-  final bool isPublic;
-  final DateTime createdAt;
+  String id;
+  String title;
+  String authorId;
+  String authorName;
+  List<String> ingredients;
+  List<String> instructions;
+  bool isPublic;
+  DateTime createdAt;
+  String status;
+  String category;
 
   Recipe({
     required this.id,
@@ -17,7 +21,34 @@ class Recipe {
     required this.instructions,
     required this.isPublic,
     required this.createdAt,
+    this.status = 'pending',
+    this.category = 'General',
   });
+
+  factory Recipe.fromMap(String id, Map<String, dynamic> map) {
+    DateTime parsedDate = DateTime.now();
+    
+    if (map['createdAt'] != null) {
+      if (map['createdAt'] is Timestamp) {
+        parsedDate = (map['createdAt'] as Timestamp).toDate();
+      } else if (map['createdAt'] is String) {
+        parsedDate = DateTime.tryParse(map['createdAt']) ?? DateTime.now();
+      }
+    }
+
+    return Recipe(
+      id: id,
+      title: map['title']?.toString() ?? 'Unknown Scroll',
+      authorId: map['authorId']?.toString() ?? '',
+      authorName: map['authorName']?.toString() ?? 'Wandering Chef',
+      ingredients: List<String>.from(map['ingredients'] ?? []),
+      instructions: List<String>.from(map['instructions'] ?? []),
+      isPublic: map['isPublic'] is bool ? map['isPublic'] : true,
+      createdAt: parsedDate,
+      status: map['status']?.toString() ?? 'approved',
+      category: map['category']?.toString() ?? 'General',
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -27,20 +58,9 @@ class Recipe {
       'ingredients': ingredients,
       'instructions': instructions,
       'isPublic': isPublic,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt,
+      'status': status,
+      'category': category,
     };
-  }
-
-  factory Recipe.fromMap(String id, Map<String, dynamic> map) {
-    return Recipe(
-      id: id,
-      title: map['title'] ?? '',
-      authorId: map['authorId'] ?? '',
-      authorName: map['authorName'] ?? '',
-      ingredients: List<String>.from(map['ingredients'] ?? []),
-      instructions: List<String>.from(map['instructions'] ?? []),
-      isPublic: map['isPublic'] ?? false,
-      createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
-    );
   }
 }

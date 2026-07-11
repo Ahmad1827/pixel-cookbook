@@ -1,16 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'services/auth_service.dart';
 import 'services/database_service.dart';
+import 'services/audio_service.dart';
 import 'views/menus/main_menu_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemStatusBarContrastEnforced: false,
+      systemNavigationBarContrastEnforced: false,
+    ),
+  );
+
   runApp(const PixelCookbookGame());
 }
 
@@ -23,6 +44,7 @@ class PixelCookbookGame extends StatelessWidget {
       providers: [
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<DatabaseService>(create: (_) => DatabaseService()),
+        ChangeNotifierProvider<AudioService>(create: (_) => AudioService()),
         StreamProvider<User?>(
           create: (context) => Provider.of<AuthService>(context, listen: false).user,
           initialData: null,
@@ -43,6 +65,15 @@ class PixelCookbookGame extends StatelessWidget {
             },
           ),
         ),
+        builder: (context, child) {
+          return Listener(
+            onPointerDown: (_) {
+              SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
+            },
+            behavior: HitTestBehavior.translucent,
+            child: child,
+          );
+        },
         home: const MainMenuScreen(), 
       ),
     );

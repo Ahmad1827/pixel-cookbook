@@ -7,14 +7,12 @@ class DatabaseService {
   Stream<List<Recipe>> get publicRecipes {
     return _db
         .collection('recipes')
-        
         .where('isPublic', isEqualTo: true) 
         .snapshots()
         .map((snapshot) {
           final recipes = snapshot.docs
               .map((doc) => Recipe.fromMap(doc.id, doc.data()))
               .toList();
-          
           
           recipes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return recipes;
@@ -38,5 +36,9 @@ class DatabaseService {
 
   Future<void> deleteRecipe(String recipeId) async {
     await _db.collection('recipes').doc(recipeId).delete();
+  }
+
+  Future<void> updateRecipeStatus(String id, String newStatus) async {
+    await _db.collection('recipes').doc(id).update({'status': newStatus});
   }
 }

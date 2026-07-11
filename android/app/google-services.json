@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:438157628461:android:9c238ca668c8def86d14a4",
+        "mobilesdk_app_id": "1:438157628461:android:f2e6e1c828fe645a6d14a4",
         "android_client_info": {
-          "package_name": "com.example.cookbook_app"
+          "package_name": "com.atod.cookbook_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "438157628461-96jjufk2nrvatr6gja4ct3ip51j0qu29.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB5r0qRdPHu3X9Bg3xu7ZFbgPFUzprZ0vk"
@@ -20,7 +25,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "438157628461-96jjufk2nrvatr6gja4ct3ip51j0qu29.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "438157628461-mu3n6ks4ha4357tf8o877jn1j0v1bpl5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cookbookApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438157628461:android:9c238ca668c8def86d14a4",
+        "android_client_info": {
+          "package_name": "com.example.cookbook_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "438157628461-96jjufk2nrvatr6gja4ct3ip51j0qu29.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5r0qRdPHu3X9Bg3xu7ZFbgPFUzprZ0vk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "438157628461-96jjufk2nrvatr6gja4ct3ip51j0qu29.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "438157628461-mu3n6ks4ha4357tf8o877jn1j0v1bpl5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cookbookApp"
+              }
+            }
+          ]
         }
       }
     }
