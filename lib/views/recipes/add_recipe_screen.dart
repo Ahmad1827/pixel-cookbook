@@ -31,7 +31,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
   void _addIngredient() {
     if (_ingredientController.text.trim().isNotEmpty) {
-      // Trigger the knife cut sound!
       Provider.of<AudioService>(context, listen: false).playCutSound();
       
       setState(() {
@@ -43,7 +42,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
   void _addInstruction() {
     if (_instructionController.text.trim().isNotEmpty) {
-      // Trigger the knife cut sound!
       Provider.of<AudioService>(context, listen: false).playCutSound();
 
       setState(() {
@@ -150,7 +148,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                       Wrap(
                         spacing: 12,
                         runSpacing: 12,
-                        children: _ingredients.map((ing) => _buildInventorySlot(ing)).toList(),
+                        children: _ingredients.asMap().entries.map((entry) => _buildInventorySlot(entry.value, entry.key)).toList(),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -282,7 +280,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     );
   }
 
-  Widget _buildInventorySlot(String item) {
+  Widget _buildInventorySlot(String item, int index) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -304,6 +302,16 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           Text(
             item, 
             style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFF1A0F08), fontWeight: FontWeight.bold)
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {
+              Provider.of<AudioService>(context, listen: false).playCutSound();
+              setState(() {
+                _ingredients.removeAt(index);
+              });
+            },
+            child: const Icon(Icons.close, color: Color(0xFFCD5C5C), size: 20),
           ),
         ],
       ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/recipe_model.dart';
 import '../../widgets/pixel_panel.dart';
+import 'edit_recipe_screen.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   final Recipe recipe;
@@ -10,6 +12,9 @@ class RecipeDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final bool isOwner = currentUser?.uid == recipe.authorId;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -20,16 +25,33 @@ class RecipeDetailScreen extends StatelessWidget {
                 baseColor: const Color(0xFF1A0F08),
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFFF4EAD4)),
-                      onPressed: () => Navigator.pop(context),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Color(0xFFF4EAD4)),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'ANCIENT TOME',
+                          style: GoogleFonts.pixelifySans(fontSize: 24, color: const Color(0xFFF4EAD4)),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'ANCIENT TOME',
-                      style: GoogleFonts.pixelifySans(fontSize: 24, color: const Color(0xFFF4EAD4)),
-                    ),
+                    if (isOwner)
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Color(0xFFDAA520)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditRecipeScreen(recipe: recipe),
+                            ),
+                          );
+                        },
+                      ),
                   ],
                 ),
               ),

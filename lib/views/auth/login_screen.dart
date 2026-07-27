@@ -7,6 +7,7 @@ import '../../widgets/pixel_panel.dart';
 import '../../widgets/pixel_button.dart';
 import '../../widgets/pixel_text_field.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -40,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                
                 Text(
                   'PIXEL\nCOOKBOOK',
                   textAlign: TextAlign.center,
@@ -55,10 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ).animate(onPlay: (controller) => controller.repeat(reverse: true))
                  .moveY(begin: -5, end: 5, duration: 2.seconds) 
                  .shimmer(delay: 3.seconds, duration: 1.seconds),
-
                 const SizedBox(height: 40),
-
-                
                 PixelPanel(
                   baseColor: const Color(0xFFE2D6B5), 
                   child: Form(
@@ -87,6 +83,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _passwordController.text.trim(),
                               );
                             }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        PixelButton(
+                          text: 'Forgot Passcode?',
+                          color: const Color(0xFF5C3A21), 
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ForgotPasswordScreen(),
+                              ),
+                            );
                           },
                         ),
                         const SizedBox(height: 16),

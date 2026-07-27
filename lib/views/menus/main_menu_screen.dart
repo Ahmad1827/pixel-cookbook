@@ -7,6 +7,7 @@ import '../../widgets/pixel_button.dart';
 import '../../widgets/guild_auth_dialog.dart';
 import '../../services/audio_service.dart';
 import '../tavern/tavern_screen.dart';
+import '../profile/profile_screen.dart';
 import 'about_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
@@ -80,7 +81,36 @@ class MainMenuScreen extends StatelessWidget {
             ),
           ),
           
-          // --- THE MUTE SOUND BUTTON ---
+          if (user != null)
+            Positioned(
+              top: 48,
+              left: 24,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A0F08),
+                    border: Border.all(color: const Color(0xFF5C3A21), width: 3),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundColor: const Color(0xFF8B5A2B),
+                        backgroundImage: user.photoURL != null && user.photoURL!.isNotEmpty ? NetworkImage(user.photoURL!) : null,
+                        child: user.photoURL == null || user.photoURL!.isEmpty ? const Icon(Icons.person, size: 16, color: Color(0xFFF4EAD4)) : null,
+                      ),
+                      const SizedBox(width: 8),
+                      Text('PROFILE', style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFF4EAD4))),
+                    ],
+                  ),
+                ),
+              ).animate().fadeIn(delay: 500.ms),
+            ),
+
           Positioned(
             top: 48,
             right: 24,
@@ -105,7 +135,6 @@ class MainMenuScreen extends StatelessWidget {
             ),
           ),
 
-          // --- THE ABOUT / INFO BUTTON ---
           Positioned(
             bottom: 24,
             right: 24,

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
 import '../../models/recipe_model.dart';
@@ -11,8 +12,8 @@ import '../../widgets/pixel_button.dart';
 import '../../widgets/guild_auth_dialog.dart';
 import '../recipes/add_recipe_screen.dart';
 import '../recipes/recipe_detail_screen.dart';
-import '../home/home_screen.dart';
 import '../menus/main_menu_screen.dart';
+import '../profile/profile_screen.dart';
 
 class TavernScreen extends StatefulWidget {
   const TavernScreen({super.key});
@@ -25,8 +26,30 @@ class _TavernScreenState extends State<TavernScreen> {
   String _searchQuery = '';
   String _selectedCategory = 'All';
   bool _showPending = false;
+  List<String> _hiddenRecipes = [];
+  SharedPreferences? _prefs;
   
   final List<String> _categories = ['All', 'Meat', 'Veggie', 'Dessert', 'Drinks', 'General'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHiddenRecipes();
+  }
+
+  Future<void> _loadHiddenRecipes() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _hiddenRecipes = _prefs?.getStringList('hidden_recipes') ?? [];
+    });
+  }
+
+  void _hideRecipeLocal(String recipeId) {
+    setState(() {
+      _hiddenRecipes.add(recipeId);
+      _prefs?.setStringList('hidden_recipes', _hiddenRecipes);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +115,7 @@ class _TavernScreenState extends State<TavernScreen> {
                   color: const Color(0xFF8B5A2B),
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => MainMenuScreen()),
+                      MaterialPageRoute(builder: (context) => const MainMenuScreen()),
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -107,9 +130,13 @@ class _TavernScreenState extends State<TavernScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        if (user == null) showGuildAuthDialog(context);
+                        if (user == null) {
+                          showGuildAuthDialog(context);
+                        } else {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                        }
                       },
-                      behavior: HitTestBehavior.opaque, // Forces the whole box to be clickable
+                      behavior: HitTestBehavior.opaque, 
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         width: double.infinity,
@@ -119,31 +146,13 @@ class _TavernScreenState extends State<TavernScreen> {
                             Icon(user != null ? Icons.person : Icons.person_outline, color: const Color(0xFFF4EAD4), size: 32),
                             const SizedBox(height: 8),
                             Text(
-                              user != null ? 'Chef Logged In' : 'Wandering Guest\n(Click to Login)',
+                              user != null ? 'Chef Logged In\n(Click for Profile)' : 'Wandering Guest\n(Click to Login)',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFF4EAD4)),
                             ),
-                            if (user != null) ...[
-                              const SizedBox(height: 16),
-                              PixelButton(
-                                text: 'LEAVE GUILD',
-                                color: const Color(0xFFCD5C5C),
-                                onPressed: () async {
-                                  await Provider.of<AuthService>(context, listen: false).signOut();
-                                  if (context.mounted) {
-                                    Navigator.of(context).popUntil((route) => route.isFirst);
-                                  }
-                                },
-                              ),
-                            ]
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      user != null ? 'Chef Logged In' : 'Wandering Guest',
-                      style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFF4EAD4)),
                     ),
                     if (user != null) ...[
                       const SizedBox(height: 16),
@@ -188,7 +197,7 @@ class _TavernScreenState extends State<TavernScreen> {
                   icon: const Icon(Icons.arrow_back, color: Color(0xFFF4EAD4)),
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => MainMenuScreen()),
+                      MaterialPageRoute(builder: (context) => const MainMenuScreen()),
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -204,7 +213,13 @@ class _TavernScreenState extends State<TavernScreen> {
                     ),
                   ),
                 ),
-                if (user != null)
+                if (user != null) ...[
+                  IconButton(
+                    icon: const Icon(Icons.person, color: Color(0xFFF4EAD4)),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Color(0xFFF4EAD4)),
                     onPressed: () async {
@@ -213,12 +228,12 @@ class _TavernScreenState extends State<TavernScreen> {
                         Navigator.of(context).popUntil((route) => route.isFirst);
                       }
                     },
-                  )
-                else
+                  ),
+                ] else
                   IconButton(
                     icon: const Icon(Icons.person_outline, color: Color(0xFFF4EAD4), size: 32),
-                    padding: const EdgeInsets.all(8), // Increases the tap area
-                    constraints: const BoxConstraints(), // Removes default padding restrictions
+                    padding: const EdgeInsets.all(8), 
+                    constraints: const BoxConstraints(), 
                     onPressed: () {
                       showGuildAuthDialog(context);
                     },
@@ -360,6 +375,8 @@ class _TavernScreenState extends State<TavernScreen> {
 
         var recipes = snapshot.data!;
         
+        recipes = recipes.where((r) => !_hiddenRecipes.contains(r.id)).toList();
+
         if (user == null) {
           recipes = recipes.where((r) => r.status == 'approved').toList();
         } else {
@@ -413,29 +430,36 @@ class _TavernScreenState extends State<TavernScreen> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeDetailScreen(recipe: recipe)));
       },
       onLongPress: () {
-        if (isAuthor) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: const Color(0xFF2B1D14),
-              title: Text('BURN SCROLL?', style: GoogleFonts.pixelifySans(color: const Color(0xFFCD5C5C))),
-              content: Text('Throw this recipe into the Tavern fire forever?', style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFF4EAD4))),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('CANCEL', style: GoogleFonts.vt323(fontSize: 18, color: const Color(0xFF8B5A2B))),
-                ),
-                TextButton(
-                  onPressed: () {
-                    dbService.deleteRecipe(recipe.id);
-                    Navigator.pop(context);
-                  },
-                  child: Text('BURN', style: GoogleFonts.vt323(fontSize: 18, color: const Color(0xFFCD5C5C))),
-                ),
-              ],
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: const Color(0xFF2B1D14),
+            title: Text(isAuthor ? 'BURN SCROLL?' : 'HIDE SCROLL?', style: GoogleFonts.pixelifySans(color: const Color(0xFFCD5C5C))),
+            content: Text(
+              isAuthor 
+                ? 'Throw this recipe into the Tavern fire forever?' 
+                : 'Hide this recipe from your personal view?', 
+              style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFF4EAD4))
             ),
-          );
-        }
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('CANCEL', style: GoogleFonts.vt323(fontSize: 18, color: const Color(0xFF8B5A2B))),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (isAuthor) {
+                    dbService.deleteRecipe(recipe.id);
+                  } else {
+                    _hideRecipeLocal(recipe.id);
+                  }
+                  Navigator.pop(context);
+                },
+                child: Text(isAuthor ? 'BURN' : 'HIDE', style: GoogleFonts.vt323(fontSize: 18, color: const Color(0xFFCD5C5C))),
+              ),
+            ],
+          ),
+        );
       },
       child: PixelPanel(
         padding: const EdgeInsets.all(8),
