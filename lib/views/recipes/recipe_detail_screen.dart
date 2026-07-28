@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/recipe_model.dart';
 import '../../widgets/pixel_panel.dart';
 import 'edit_recipe_screen.dart';
+import '../profile/profile_screen.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   final Recipe recipe;
@@ -16,6 +17,7 @@ class RecipeDetailScreen extends StatelessWidget {
     final bool isOwner = currentUser?.uid == recipe.authorId;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF4EAD4),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -57,7 +59,7 @@ class RecipeDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               PixelPanel(
-                baseColor: const Color(0xFFF4EAD4),
+                baseColor: const Color(0xFFFFFFFF),
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,9 +76,33 @@ class RecipeDetailScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Discovered by ${recipe.authorName}', 
-                      style: GoogleFonts.vt323(fontSize: 22, color: const Color(0xFF5C3A21))
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileScreen(uid: recipe.authorId),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFE6CE),
+                          border: Border.all(color: const Color(0xFF8B5A2B), width: 2),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.person, color: Color(0xFF8B5A2B), size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'By ${recipe.authorName}', 
+                              style: GoogleFonts.vt323(fontSize: 22, color: const Color(0xFF5C3A21), fontWeight: FontWeight.bold)
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 24.0),
