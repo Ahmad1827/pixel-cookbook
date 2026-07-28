@@ -86,7 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        TextButton(
+                        PixelButton(
+                          text: 'FORGOT PASSCODE?',
+                          color: const Color(0xFFCD5C5C), 
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -95,16 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             );
                           },
-                          child: Text(
-                            'FORGOT PASSCODE?',
-                            style: GoogleFonts.pixelifySans(
-                              fontSize: 22,
-                              color: const Color(0xFFCD5C5C),
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         GestureDetector(
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
                           child: Text(

@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final url = await ref.getDownloadURL();
 
       await _auth.currentUser?.updatePhotoURL(url);
-      await _firestore.collection('users').doc(targetUid).update({'photoUrl': url});
+      await _firestore.collection('users').doc(targetUid).set({'photoUrl': url}, SetOptions(merge: true));
       
       setState(() {
         photoUrl = url;
@@ -146,11 +146,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               final newName = controller.text.trim();
               if (newName.isNotEmpty) {
-                await _auth.currentUser?.updateDisplayName(newName);
-                await _firestore.collection('users').doc(targetUid).update({'displayName': newName});
-                setState(() => displayName = newName);
+                try {
+                  await _auth.currentUser?.updateDisplayName(newName);
+                  await _firestore.collection('users').doc(targetUid).set({'displayName': newName}, SetOptions(merge: true));
+                  setState(() => displayName = newName);
+                  if (context.mounted) Navigator.pop(context);
+                } catch (e) {
+                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
               }
-              if (context.mounted) Navigator.pop(context);
             },
             child: Text('SAVE', style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFDAA520))),
           ),
@@ -200,9 +204,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextButton(onPressed: () => Navigator.pop(context), child: Text('CANCEL', style: GoogleFonts.vt323(fontSize: 20, color: Colors.grey))),
               TextButton(
                 onPressed: () async {
-                  await _firestore.collection('users').doc(targetUid).update({'traits': tempTraits});
-                  setState(() => userTraits = List.from(tempTraits));
-                  if (context.mounted) Navigator.pop(context);
+                  try {
+                    await _firestore.collection('users').doc(targetUid).set({'traits': tempTraits}, SetOptions(merge: true));
+                    setState(() => userTraits = List.from(tempTraits));
+                    if (context.mounted) Navigator.pop(context);
+                  } catch (e) {
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  }
                 },
                 child: Text('SAVE', style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFDAA520))),
               ),
