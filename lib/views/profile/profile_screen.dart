@@ -104,9 +104,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (image == null) return;
 
       setState(() => isLoading = true);
+      
       final ref = FirebaseStorage.instance.ref().child('avatars/$targetUid.jpg');
-      await ref.putFile(File(image.path));
-      final url = await ref.getDownloadURL();
+      
+      // ACEASTA E REPARATIA: Așteptăm rezultatul efectiv al upload-ului
+      final uploadTask = await ref.putFile(File(image.path));
+      final url = await uploadTask.ref.getDownloadURL();
 
       await _auth.currentUser?.updatePhotoURL(url);
       await _firestore.collection('users').doc(targetUid).set({'photoUrl': url}, SetOptions(merge: true));

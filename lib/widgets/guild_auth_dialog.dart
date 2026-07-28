@@ -1,105 +1,124 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
-import 'pixel_panel.dart';
+import '../views/auth/forgot_password_screen.dart';
 import 'pixel_button.dart';
-import 'pixel_text_field.dart';
 
 void showGuildAuthDialog(BuildContext context) {
-  showGeneralDialog(
+  showDialog(
     context: context,
-    barrierDismissible: true,
-    barrierLabel: "Guild Master",
-    transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (context, anim1, anim2) {
-      return Center(
-        child: Material(
-          color: Colors.transparent,
-          child: GuildAuthPanel(),
-        ),
-      );
-    },
-    transitionBuilder: (context, anim1, anim2, child) {
-      return Transform.scale(
-        scale: Curves.easeOutBack.transform(anim1.value),
-        child: FadeTransition(opacity: anim1, child: child),
-      );
-    },
+    builder: (context) => const GuildAuthDialog(),
   );
 }
 
-class GuildAuthPanel extends StatefulWidget {
+class GuildAuthDialog extends StatefulWidget {
+  const GuildAuthDialog({super.key});
+
   @override
-  _GuildAuthPanelState createState() => _GuildAuthPanelState();
+  State<GuildAuthDialog> createState() => _GuildAuthDialogState();
 }
 
-class _GuildAuthPanelState extends State<GuildAuthPanel> {
+class _GuildAuthDialogState extends State<GuildAuthDialog> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isRegistering = false;
+  bool isLogin = true;
+  bool isLoading = false;
+
+  Future<void> submit() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    if (email.isEmpty || password.isEmpty) return;
+
+    setState(() => isLoading = true);
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      if (isLogin) {
+        await authService.signInWithEmailAndPassword(email, password);
+      } else {
+        await authService.registerWithEmailAndPassword(email, password);
+      }
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        setState(() => isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-
-    return Container(
-      width: 400,
-      padding: const EdgeInsets.all(24),
-      child: PixelPanel(
-        baseColor: const Color(0xFFE2D6B5),
+    return Dialog(
+      backgroundColor: const Color(0xFF2B1D14),
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: Color(0xFF5C3A21), width: 4),
+        borderRadius: BorderRadius.circular(0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF8B5A2B),
-                    border: Border.all(color: const Color(0xFF1A0F08), width: 3),
-                  ),
-                  child: const Icon(Icons.person, color: Colors.white), 
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    _isRegistering 
-                        ? '"Ah, a new face! Sign the ledger to join the Chef\'s Guild."'
-                        : '"Welcome back to the Tavern, Chef. Show me your credentials."',
-                    style: GoogleFonts.vt323(fontSize: 22, color: const Color(0xFF1A0F08), fontStyle: FontStyle.italic),
-                  ),
-                ),
-              ],
+            Text(
+              isLogin ? 'ENTER GUILD' : 'JOIN GUILD',
+              style: GoogleFonts.pixelifySans(fontSize: 32, color: const Color(0xFFDAA520)),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Divider(color: Color(0xFF5C3A21), thickness: 3),
-            ),
-            PixelTextField(controller: _emailController, label: 'Scroll Address (Email)'),
-            const SizedBox(height: 12),
-            PixelTextField(controller: _passwordController, label: 'Secret Passcode', obscureText: true),
             const SizedBox(height: 24),
-            PixelButton(
-              text: _isRegistering ? 'SIGN THE LEDGER' : 'PRESENT CREDENTIALS',
-              color: const Color(0xFF2E8B57),
-              onPressed: () async {
-                if (_isRegistering) {
-                  await authService.registerWithEmailAndPassword(_emailController.text, _passwordController.text);
-                } else {
-                  await authService.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
-                }
-                if (mounted) Navigator.pop(context); 
-              },
+            TextField(
+              controller: _emailController,
+              style: GoogleFonts.vt323(fontSize: 24, color: const Color(0xFFF4EAD4)),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Color(0xFF8B5A2B)),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFF5C3A21))),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFDAA520))),
+              ),
             ),
             const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () => setState(() => _isRegistering = !_isRegistering),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              style: GoogleFonts.vt323(fontSize: 24, color: const Color(0xFFF4EAD4)),
+              decoration: const InputDecoration(
+                labelText: 'Passcode',
+                labelStyle: TextStyle(color: Color(0xFF8B5A2B)),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFF5C3A21))),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFDAA520))),
+              ),
+            ),
+            const SizedBox(height: 24),
+            isLoading
+                ? const CircularProgressIndicator(color: Color(0xFFDAA520))
+                : PixelButton(
+                    text: isLogin ? 'LOGIN' : 'REGISTER',
+                    color: const Color(0xFF2E8B57),
+                    onPressed: submit,
+                  ),
+            const SizedBox(height: 16),
+            
+            // AICI ESTE BUTONUL DE FORGOT PASSWORD
+            if (isLogin)
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Închidem pop-up-ul
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                  );
+                },
+                child: Text(
+                  'FORGOT PASSCODE?',
+                  style: GoogleFonts.pixelifySans(fontSize: 18, color: const Color(0xFFCD5C5C), decoration: TextDecoration.underline),
+                ),
+              ),
+              
+            TextButton(
+              onPressed: () => setState(() => isLogin = !isLogin),
               child: Text(
-                _isRegistering ? 'I already have a Guild Badge' : 'I need to join the Guild',
-                style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFF5C3A21), decoration: TextDecoration.underline),
+                isLogin ? 'Need an account? Register' : 'Already in guild? Login',
+                style: GoogleFonts.vt323(fontSize: 20, color: const Color(0xFFE2D6B5)),
               ),
             ),
           ],
