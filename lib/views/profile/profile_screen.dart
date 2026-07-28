@@ -105,11 +105,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       setState(() => isLoading = true);
       
+      final file = File(image.path);
       final ref = FirebaseStorage.instance.ref().child('avatars/$targetUid.jpg');
       
-      // ACEASTA E REPARATIA: Așteptăm rezultatul efectiv al upload-ului
-      final uploadTask = await ref.putFile(File(image.path));
-      final url = await uploadTask.ref.getDownloadURL();
+      // Lansăm upload-ul și așteptăm explicit finalizarea lui
+      final uploadTask = ref.putFile(file);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      
+      // Obținem URL-ul abia DUPĂ ce snapshot-ul confirmă succesul
+      final url = await snapshot.ref.getDownloadURL();
 
       await _auth.currentUser?.updatePhotoURL(url);
       await _firestore.collection('users').doc(targetUid).set({'photoUrl': url}, SetOptions(merge: true));
@@ -121,7 +125,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload Error: $e')));
+        debugPrint('Eroare detaliată la upload: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Eroare Upload: $e')));
       }
     }
   }
